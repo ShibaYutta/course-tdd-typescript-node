@@ -1,0 +1,19 @@
+{
+  "name": "waldemar-neto-nodejs-typescript",
+  "version": "1.0.0",
+  "description": "Seguindo curos do waldemar sobre Api Typescript yarn e module-alias",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/module-alias": "^2.0.1",
+    "@types/node": "^18.13.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "module-alias": "^2.2.2"
+  }
+}
