@@ -4,6 +4,8 @@
   "description": "Seguindo curos do waldemar sobre Api Typescript yarn e module-alias",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
