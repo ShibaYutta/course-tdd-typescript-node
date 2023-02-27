@@ -1,6 +1,7 @@
 import { InternalError } from '@src/util/errors/internal-error';
 import { AxiosStatic, AxiosError } from 'axios';
 import config, { IConfig } from 'config';
+import * as HTTPUtil from '@src/util/request';
 
 export interface StormGlassPointSource {
   [key: string]: number;
@@ -57,7 +58,7 @@ export class StormGlass {
     'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
   readonly stormGlassAPISource = 'noaa';
 
-  constructor(protected request: AxiosStatic) {}
+  constructor(protected request = new HTTPUtil.Request()) {}
 
   public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
     try {
@@ -76,11 +77,11 @@ export class StormGlass {
       return this.normalizeResponse(response.data);
     } catch (error) {
       const axiosError = error as AxiosError;
-      if (axiosError.response && axiosError.response.status) {
+      if (HTTPUtil.Request.isRequestError(axiosError)) {
         throw new StormGlassResponseError(
           `Error: ${JSON.stringify(
-            axiosError.response.data
-          )} Code: ${JSON.stringify(axiosError.response.status)}`
+            axiosError.response?.data
+          )} Code: ${JSON.stringify(axiosError.response?.status)}`
         );
       }
       throw new ClientRequestError(axiosError.message);
