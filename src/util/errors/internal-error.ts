@@ -1,4 +1,4 @@
-export class internalError extends Error {
+export class InternalError extends Error {
   constructor(
     public message: string,
     protected code: number = 500,

@@ -1,5 +1,5 @@
-import { internalError } from '@src/util/errors/internal-error';
-import { AxiosStatic } from 'axios';
+import { InternalError } from '@src/util/errors/internal-error';
+import { AxiosStatic, AxiosError } from 'axios';
 
 export interface StormGlassPointSource {
   [key: string]: number;
@@ -31,10 +31,18 @@ export interface ForecastPoint {
   windSpeed: number;
 }
 
-export class ClientRequestError extends internalError {
+export class ClientRequestError extends InternalError {
   constructor(message: string) {
     const internalMessage =
       'Unexpected error when trying to communicate to StormGlass';
+    super(`${internalMessage}: ${message}`);
+  }
+}
+
+export class StormGlassResponseError extends InternalError {
+  constructor(message: string) {
+    const internalMessage =
+      'Unexpected error returned by the StormGlass service';
     super(`${internalMessage}: ${message}`);
   }
 }
@@ -58,7 +66,15 @@ export class StormGlass {
       );
       return this.normalizeResponse(response.data);
     } catch (error) {
-      throw new ClientRequestError((error as Error).message);
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status) {
+        throw new StormGlassResponseError(
+          `Error: ${JSON.stringify(
+            axiosError.response.data
+          )} Code: ${JSON.stringify(axiosError.response.status)}`
+        );
+      }
+      throw new ClientRequestError(axiosError.message);
     }
   }
 
