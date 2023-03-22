@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    stategy:
+    strategy:
       matix:
         node-version: [12.x]
         mongodb-version: [4.2]
