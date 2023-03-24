@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.13.1]
+        node-version: [18.15.0]
         mongodb-version: [4.2]
 
     steps:
@@ -34,10 +34,6 @@ jobs:
       - if: github.ref == 'refs/heads/main'
         name: 'Fly-ctl Setup'
         uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - if: github.ref == 'refs/heads/main'
-        name: 'Build Typescript App'
-        run: npm run build
 
       - if: github.ref == 'refs/heads/main'
         name: 'Deploy Docker on Fly.io'

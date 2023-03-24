@@ -1,13 +1,22 @@
-FROM mhart/alpine-node:16
-ARG NODE_ENV=production
-ENV NODE_ENV $NODE_ENV
+FROM node:18-bullseye as ts-compiler
+WORKDIR /usr/app
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY /config ./config
+COPY /src ./src
+COPY /test ./test
+RUN npm install
+RUN npm run build
 
-COPY ./dist/src /dist/src
-COPY ./config /config
-COPY ./package.json /package.json
-COPY ./package-lock.json /package-lock.json 
+FROM node:18-bullseye as ts-remover
+WORKDIR /usr/app
+COPY --from=ts-compiler /usr/app/package*.json ./
+COPY --from=ts-compiler /usr/app/dist/src ./src
+COPY --from=ts-compiler /usr/app/config ./config
+RUN npm install --only=production
 
-LABEL fly_launch_runtime="nodejs"
-
-RUN NODE_ENV=$NODE_ENV npm install --production
-CMD ["node", "dist/src/index.js"]
+FROM node:18-bullseye-slim
+WORKDIR /usr/app
+COPY --from=ts-remover /usr/app ./
+USER 1000
+CMD ["src/index.js"]
